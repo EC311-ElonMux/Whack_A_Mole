@@ -83,8 +83,8 @@ The code that makes up Game Control consist of countdown.v, enable_trigger.v, mo
 	module increments score by 1, and updates the output to reflect that a mole was just hit down. Along with
 	a signal indicating that there was a mole that was hit.
 		
-The code that makes up Output Decoding is made up of an assign statement a top_square.v module and a series of decoding modules which are: 
-	time_to_bcd_to_disp.v, score_to_bcd_to_disp.v, difficulty_to_disp and to_seven_segment.v
+The code that makes up Output Decoding is made up of an assign statement a top_square.v module and a series of decoding modules 
+which are: time_to_bcd_to_disp.v, score_to_bcd_to_disp.v, difficulty_to_disp and to_seven_segment.v
 	
 	Inside of the assign statement, the code simply assigns the 8 bit number that score_tracker.v is outputting 
 	to the LEDS, as those represent the current mole position, including the corrections for when a mole was hit down.
