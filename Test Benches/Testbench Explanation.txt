@@ -1,0 +1,15 @@
+Here are 4 testbenches, which made up most of the testing that we had done for this project. However, they are incredibly outdated,
+as the testbenches were created near the start of the project to check that a basic idea works, and then as the project advanced after
+pushing the files to the board, debugging and changes were done using the FPGA board, not testbenches.
+
+With t_lfsr we just needed to check that the code was actually giving out a pseudo random sequence
+
+t_gameplay and t_molepicker were ways to see if we were actually able to use these pseudo random sequences to
+get a mole, and then detect when the moles and input match eachother to increment score. In fact gameplay.v was actually completely
+phased out of the project for another module, which is why it's .v is included inside of this file.
+
+t_counter was just a quick module to check that the signal we are using to signal that a mole should pop up is working.
+
+A large reason for there only being 4 testbenches for this project is because a lot of the concepts that were applied in labs 1-4 were
+incorporated over, such as the counter from lab 4, VGA code and the edge detection for the switches from Lab 3. Testbenches for those 
+concepts were made earlier, and not imported over.
