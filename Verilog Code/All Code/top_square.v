@@ -18,12 +18,11 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////
-
-
 module top_square(
     input wire CLK,             // board clock: 100 MHz on Arty/Basys3/Nexys
     input wire RST_BTN,
-    input wire [7:0] random_num,         
+    input wire [7:0] random_num, 
+    input wire [7:0] mole_hit,         
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,       // vertical sync output
     output wire [3:0] VGA_R,    // 4-bit VGA red output
@@ -54,68 +53,123 @@ module top_square(
     );
 
     // Four overlapping squares
-    wire SQ1,SQ2,SQ3,SQ4,SQ5,SQ6,SQ7,SQ8,SQ9,SQ10,SQ11,SQ12,SQ13,SQ14,SQ15,SQ16,SQ17,SQ18;
-    reg green;
+    wire SQ1,SQ2,SQ3,SQ4,SQ5,SQ6,SQ7,SQ8,SQ9,SQ10,SQ11,SQ12,SQ13,SQ14,SQ15,SQ16,SQ17,SQMid,SQ10hit,SQ11hit,SQ12hit,SQ13hit,SQ14hit,SQ15hit,SQ16hit,SQ17hit;
+    reg green,grid;
     assign SQ1 = ((x > 100) & (y > 60) & (x < 540) & (y < 420)) ? 1 : 0;
-    assign SQ2 = ((x > 180) & (y > 60) & (x < 280) & (y < 420)) ? 1 : 0; // Red Square
-    assign SQ3 = ((x > 360) & (y > 60) & (x < 460) & (y < 420)) ? 1 : 0; // Red Square
-    assign SQ4 = ((x > 100) & (y > 280) & (x < 181) & (y < 340)) ? 1 : 0; // Red Square
-    assign SQ5 = ((x > 100) & (y > 140) & (x < 181) & (y < 200)) ? 1 : 0; // Red Square
-    assign SQ6 = ((x > 279) & (y > 280) & (x < 361) & (y < 340)) ? 1 : 0; // Red Square
-    assign SQ7 = ((x > 279) & (y > 140) & (x < 361) & (y < 200)) ? 1 : 0; // Red Square
-    assign SQ8 = ((x > 459) & (y > 280) & (x < 540) & (y < 340)) ? 1 : 0; // Red Square
-    assign SQ9 = ((x > 459) & (y > 140) & (x < 540) & (y < 200)) ? 1 : 0; // Red Square
+    assign SQ2 = ((x > 180) & (y > 60) & (x < 280) & (y < 420)) ? 1 : 0; 
+    assign SQ3 = ((x > 360) & (y > 60) & (x < 460) & (y < 420)) ? 1 : 0; 
+    assign SQ4 = ((x > 100) & (y > 279) & (x < 181) & (y < 341)) ? 1 : 0; // Red Square
+    assign SQ5 = ((x > 100) & (y > 139) & (x < 181) & (y < 201)) ? 1 : 0; // Red Square
+    assign SQ6 = ((x > 279) & (y > 279) & (x < 361) & (y < 341)) ? 1 : 0; // Red Square
+    assign SQ7 = ((x > 279) & (y > 139) & (x < 361) & (y < 201)) ? 1 : 0; // Red Square
+    assign SQ8 = ((x > 459) & (y > 279) & (x < 540) & (y < 341)) ? 1 : 0; // Red Square
+    assign SQ9 = ((x > 459) & (y > 139) & (x < 540) & (y < 201)) ? 1 : 0; // Red Square
+    
+    assign SQMid = ((x > 279) & (y > 200) & (x < 361) & (y < 280)) ? 1 : 0; // Center Square
+    
     assign SQ10 = ((x > 100) & (y > 60) &  (x < 181) & (y < 140)) ? 1 : 0; // Green Square
     assign SQ11 = ((x > 100) & (y > 200) & (x < 181) & (y < 280)) ? 1 : 0; // Green Square
     assign SQ12 = ((x > 100) & (y > 340) & (x < 181) & (y < 420)) ? 1 : 0; // Green Square
     assign SQ13 = ((x > 279) & (y > 60 ) & (x < 361) & (y < 140)) ? 1 : 0; // Green Square
-    assign SQ14 = ((x > 279) & (y > 200) & (x < 361) & (y < 280)) ? 1 : 0; // Green Square
-    assign SQ15 = ((x > 279) & (y > 340) & (x < 361) & (y < 420)) ? 1 : 0; // Green Square
-    assign SQ16 = ((x > 459) & (y > 60 ) & (x < 540) & (y < 140)) ? 1 : 0; // Green Square
-    assign SQ17 = ((x > 459) & (y > 200) & (x < 540) & (y < 280)) ? 1 : 0; // Green Square
-    assign SQ18 = ((x > 459) & (y > 340) & (x < 540) & (y < 420)) ? 1 : 0; // Green Square
+    assign SQ14 = ((x > 279) & (y > 340) & (x < 361) & (y < 420)) ? 1 : 0; // Green Square
+    assign SQ15 = ((x > 459) & (y > 60 ) & (x < 540) & (y < 140)) ? 1 : 0; // Green Square
+    assign SQ16 = ((x > 459) & (y > 200) & (x < 540) & (y < 280)) ? 1 : 0; // Green Square
+    assign SQ17 = ((x > 459) & (y > 340) & (x < 540) & (y < 420)) ? 1 : 0; // Green Square
+    
+    assign SQ10hit = ((x > 100) & (y > 60) &  (x < 181) & (y < 140)) ? 1 : 0; // Hit Square
+    assign SQ11hit = ((x > 100) & (y > 200) & (x < 181) & (y < 280)) ? 1 : 0; // Hit Square
+    assign SQ12hit = ((x > 100) & (y > 340) & (x < 181) & (y < 420)) ? 1 : 0; // Hit Square
+    assign SQ13hit = ((x > 279) & (y > 60 ) & (x < 361) & (y < 140)) ? 1 : 0; // Hit Square
+    assign SQ14hit = ((x > 279) & (y > 340) & (x < 361) & (y < 420)) ? 1 : 0; // Hit Square
+    assign SQ15hit = ((x > 459) & (y > 60 ) & (x < 540) & (y < 140)) ? 1 : 0; // Hit Square
+    assign SQ16hit = ((x > 459) & (y > 200) & (x < 540) & (y < 280)) ? 1 : 0; // Hit Square
+    assign SQ17hit = ((x > 459) & (y > 340) & (x < 540) & (y < 420)) ? 1 : 0; // Hit Square
+
+
+
     
     
- assign VGA_R[3] = SQ1 - SQ2 - SQ3 - SQ4 - SQ5 - SQ6 - SQ7 - SQ8 - SQ9;
+ assign VGA_R[3] = grid;
  assign VGA_G[3] = green;
   
   always @ (*)
   begin 
     green = 0;
+    grid =  SQ1 - SQ2 - SQ3 - SQ4 - SQ5 - SQ6 - SQ7 - SQ8 - SQ9 - SQMid;
+    
     if(random_num[0] == 1)
         begin
-            green = green + SQ10;
+            green = green + SQ10; 
         end
+    else if(random_num[0] == 0 && mole_hit[0]==1)
+        begin
+            green = green + SQ10;
+            grid = grid - SQ10hit;
+        end   
     if(random_num[1] == 1)
         begin
             green = green + SQ11;
         end
-    if(random_num[2] == 1)
+    else if(random_num[1] == 0 && mole_hit[1]==1)
+        begin
+            green = green + SQ11;
+            grid = grid - SQ11hit;
+        end        
+       if(random_num[2] == 1)
         begin
             green = green + SQ12;
         end
-    if(random_num[3] == 1)
+    else if(random_num[2] == 0 && mole_hit[2]==1)
+        begin
+            green = green + SQ12;
+            grid = grid - SQ12hit;
+        end 
+        if(random_num[3] == 1)
         begin
             green = green + SQ13;
         end
-    if(random_num[4] == 1)
+    else if(random_num[3] == 0 && mole_hit[3]==1)
+        begin
+            green = green + SQ13;
+            grid = grid - SQ13hit;
+        end 
+        if(random_num[4] == 1)
         begin
             green = green + SQ14;
         end
-    if(random_num[5] == 1)
+    else if(random_num[4] == 0 && mole_hit[4]==1)
+        begin
+            green = green + SQ14;
+            grid = grid - SQ14hit;
+        end 
+        if(random_num[5] == 1)
         begin
             green = green + SQ15;
         end
-    if(random_num[6] == 1)
+    else if(random_num[5] == 0 && mole_hit[5]==1)
+        begin
+            green = green + SQ15;
+            grid = grid - SQ15hit;
+        end 
+        if(random_num[6] == 1)
         begin
             green = green + SQ16;
         end
-    if(random_num[7] == 1)
+    else if(random_num[6] == 0 && mole_hit[6]==1)
+        begin
+            green = green + SQ16;
+            grid = grid - SQ16hit;
+        end 
+        if(random_num[7] == 1)
         begin
             green = green + SQ17;
         end
-  end 
+    else if(random_num[7] == 0 && mole_hit[7]==1)
+        begin
+            green = green + SQ17;
+            grid = grid - SQ17hit;
+        end 
+  end
     
     
 endmodule
-

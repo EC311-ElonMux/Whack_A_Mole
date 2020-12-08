@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module whack_a_mole(
     input CLK100MHZ,
     input upbtn,
@@ -51,6 +50,7 @@ module whack_a_mole(
         end
     end
     
+    //Wires that store the game time, difficulty, and signals for game start and setting values
     wire [5:0] gametime;
     wire [1:0] difficultywire;
     wire lr, gamestart; 
@@ -68,14 +68,16 @@ module whack_a_mole(
         .gamestart(gamestart)
         );
         
-    //Module that tracks switches that have been hit
+    //Wires that contain which switch was hit
     wire [7:0] poshit;
+    //Module that tracks switches that have been hit
     switch_inputs hammer(
         .switches(switches),
         .CLK100MHZ(CLK50MHZ),
         .positionhit(poshit)
         );
-        
+    
+    //Wires that contain how long is left in game, along with if game has ended
     wire [5:0] timeleft;
     wire gameend;
     //Module that counts time remaining
@@ -87,33 +89,37 @@ module whack_a_mole(
         .gameend(gameend)
         );
           
-    //Counter that outputs a signal every 5/3/1 seconds based on difficulty
+    //Signal that lets the new output from the mole picker be sent out
     wire enablewire;
+    //Counter that outputs a signal based on difficulty, 2/1.2/0.8 seconds
     enable_trigger count(
         .CLK100MHZ(CLK100MHZ),
         .difficulty(difficultywire),
         .enable(enablewire)
         );
-        
-    wire [7:0] omole; 
-    //Picks the moles and how long it stays
+    
+    //Wire that contains the position of the mole and where the moles were hit
+    wire [7:0] internalmole;
+    wire [7:0] molehit; 
+    //Module that picks the moles and how long it stays
     mole_picker molepick(
         .CLK100MHZ(CLK100MHZ),
         .difficulty(difficult),
+        .molehit(molehit),
         .enable(enablewire),
-        .mole(omole)
+        .mole(internalmole)
         );
         
-    //Module that tracks the moles hit and adjusts score and mole position
+    //Wire containing the mole information and score information to send out onto board via LED/VGA
     wire [7:0] mole;
     wire [7:0] score;
-    wire molehit;
+    //Module that tracks the moles hit and adjusts score and mole position
     score_tracker scorer(
         .CLK100MHZ(CLK100MHZ),
         .gamestart(gamestart),
         .gameend(gameend),
         .enable(enablewire),
-        .input_pos(omole),  
+        .input_pos(internalmole),  
         .switch_hit(poshit),
         .molehit(molehit),
         .cmole(mole),
@@ -123,16 +129,18 @@ module whack_a_mole(
     //Assigns LEDS to Mole
     assign led = mole;    
     
-    //Module that turns the game time into readable format for SSD
+    //Wires that store 10s and 1s place for the time, in 7 seg format
     wire [6:0] time1, time10;
+    //Module that turns the game time into readable format for SSD
     time_to_bcd_to_disp timedecoder(
         .in(timeleft),        
         .digit0(time1),
         .digit1(time10)
         );
         
-    //Module that turns the score into readable format for SSD
+    //Wires that store 100s, 10s, and 1s place for the score, in 7 seg format
     wire [6:0] score1, score10, score100;
+    //Module that turns the score into readable format for SSD
     score_to_bcd_to_disp scoredecoder(
         .in(score),        
         .digit0(score1),
@@ -140,8 +148,9 @@ module whack_a_mole(
         .digit2(score100)
         );
         
+    //Wires that store difficulty, in 7 seg format 
+    wire [6:0] difficultycode;   
     //Module that translates game difficulty into SSD
-    wire [6:0] difficultycode;
     difficulty_to_disp difficultycoder(
         .in(difficultywire),
         .digit(difficultycode)
@@ -163,11 +172,12 @@ module whack_a_mole(
         .cathode(cathode) 
         ); 
         
-    //VGA Module
+    //VGA Module that sends moles to the display screen
     top_square VGA(
         .CLK(CLK100MHZ),          
         .RST_BTN(RST_BTN),
-        .random_num(mole),       
+        .random_num(mole),
+        .mole_hit(molehit),       
         .VGA_HS_O(VGA_HS_O),      
         .VGA_VS_O(VGA_VS_O),      
         .VGA_R(VGA_R),    

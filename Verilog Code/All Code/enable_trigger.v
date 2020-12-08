@@ -43,11 +43,11 @@ module enable_trigger(
         case (difficulty)
             2'b00: 
             begin
-                if(currentcount == 250000000)
+                if(currentcount == 200000000)//2 seconds between new mole
                 begin
                     renable = 1;
                 end
-                else if (currentcount > 250000050)
+                else if (currentcount > 200000050)
                 begin
                     renable = 0;
                     currentcount = 0;
@@ -59,11 +59,11 @@ module enable_trigger(
             end
             2'b01:
             begin
-                if(currentcount == 160000000)
+                if(currentcount == 120000000) //1.2 second between mole
                 begin
                     renable = 1;
                 end
-                else if (currentcount > 160000050)
+                else if (currentcount > 120000050)
                 begin
                     renable = 0;
                     currentcount = 0;
@@ -75,11 +75,11 @@ module enable_trigger(
             end
             2'b10:
             begin
-                if(currentcount == 100000000)
+                if(currentcount == 80000000)//0.8 seconds between mole
                 begin
                     renable = 1;
                 end
-                else if (currentcount > 100000050)
+                else if (currentcount > 80000050)
                 begin
                     renable = 0;
                     currentcount = 0;

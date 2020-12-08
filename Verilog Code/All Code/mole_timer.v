@@ -25,27 +25,30 @@ module mole_timer(
     input mole,
     input enable,
     input [2:0] moletime,
+    input molehit,
     input CLK100MHZ,
     output reg omole
     );
     
+    //Counter variable
     reg [28:0] currentcount = 0;
+    //Variable that counts how long a mole has stuck around
     reg [28:0] molestick = 0;
-    reg [2:0] moleduration;
     
     always @(posedge CLK100MHZ)
     begin
+        //Updating counter
         currentcount = currentcount + 1;
-        //If a mole has just popped up
+        //If a new mole is needed, then current random time and position saved, and counter started
         if(enable == 1 && mole == 1)
         begin
+            //Setting which mole is up, resetting counter and storing how long it should stay up
             currentcount = 0;
             omole = 1;
-            moleduration = moletime;
             //Set how long the mole should be up
             case(difficulty)
             2'b00: begin
-                case(moleduration)
+                case(moletime)
                     3'b000:begin
                         molestick = 260000000; //2.6 seconds
                     end
@@ -73,7 +76,7 @@ module mole_timer(
                 endcase
                 end
                 2'b01: begin
-                    case(moleduration)
+                    case(moletime)
                         3'b000:begin
                             molestick = 180000000; //1.8 seconds
                         end
@@ -101,7 +104,7 @@ module mole_timer(
                     endcase
                 end
                 2'b10: begin
-                    case(moleduration)
+                    case(moletime)
                         3'b000:begin
                             molestick = 80000000; //0.8 seconds
                         end
@@ -130,14 +133,15 @@ module mole_timer(
                 end
             endcase
         end
-        //Check for pushing the mole down
+        //Check for pushing the mole down if not already pushed down
         else if(omole == 1)
         begin
             //If the count is matching, then drop mole down
             if(currentcount >= molestick)
-            begin
                 omole = 0;
-            end
+            //If the mole has been hit, then drop mole down
+            if(molehit == 1)
+                omole = 0;
         end
     end
     
