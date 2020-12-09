@@ -1,12 +1,12 @@
 This is the EC311 Final Project of Whack-A-Mole
 
 By Team Elon Mux which consists of:
-	Devin Goodwin
-	Linglong Le
-	Julian Leguizamon
-	Chenliang Wang
+	Devin Goodwin: - U51996983
+	Linglong Le: BU ID - U58157743
+	Julian Leguizamon: BU ID - U86814184
+	Chenliang Wang: BU ID - U01275249
 
-Project Demo Link: 
+Project Demo Link: https://youtu.be/pJavIuCu2RQ
 
 Project Overview:
 
